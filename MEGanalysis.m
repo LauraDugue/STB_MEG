@@ -56,6 +56,7 @@ end
 %RUN: ld_manualInspection
 
 %% Epoching (cue, for just cue-only trials, or display, for just display-present trials)
+%%% Make sure to recombine the two half of the data
 
 %% Separating per condition - Saving as a mat file
  
