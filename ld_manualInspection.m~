@@ -15,8 +15,9 @@ dat = ft_read_data(sqdfile);
 hdr = ft_read_header(sqdfile);
 
 %% make the preproc dir if it doesn't exist
-if ~exist(preprocmanualDir,'dir')
-    mkdir(preprocmanualDir)
+preprocDir = sprintf('%s/preproc', dataDir);
+if ~exist(preprocmanual,'dir')
+    mkdir(preprocmanual)
 end
 
 %% trigger search and preprocessing

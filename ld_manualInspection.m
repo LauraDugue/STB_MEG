@@ -7,12 +7,19 @@ rootDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot/';
 obs = 'id';
 attCond = 'exo';
 session = 'R0947_STB_4.28.15';
-dataDir = [rootDir, obs '/meg/' attCond '/' session '/preproc/']; 
-prepDir = [rootDir, obs '/meg/' attCond '/' session '/preprocmanual/'];
+allDir = [rootDir, obs '/meg/' attCond '/' session]; 
+dataDir = [allDir '/preproc/']; 
+prepDir = [allDir '/preprocmanual/'];
 filename = 'R0947_STB_4.28.15_ebi';
 sqdfile = [dataDir,filename,'.sqd'];
 dat = ft_read_data(sqdfile);
 hdr = ft_read_header(sqdfile);
+
+%% make the preproc dir if it doesn't exist
+preprocmanualDir = sprintf('%s/preprocmanual', allDir);
+if ~exist(preprocmanualDir,'dir')
+    mkdir(preprocmanualDir)
+end
 
 %% trigger search and preprocessing
 % SSVEP trials: prestim = 0.5 (before trigger), poststim = 3.1
