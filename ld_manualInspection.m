@@ -3,33 +3,31 @@
 ft_defaults
 
 %% load & read dataset 
+clc
 rootDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot/';
 obs = 'id';
 attCond = 'exo';
 session = 'R0947_STB_4.28.15';
 allDir = [rootDir, obs '/meg/' attCond '/' session]; 
-dataDir = [allDir '/preproc/']; 
+dataDir = [allDir '/preprocmanual/']; 
 prepDir = [allDir '/preprocmanual/'];
-filename = 'R0947_STB_4.28.15_ebi';
+filename = 'R0947_STB_4.28.15_ebi_half02';
 sqdfile = [dataDir,filename,'.sqd'];
 dat = ft_read_data(sqdfile);
 hdr = ft_read_header(sqdfile);
 
-%% make the preproc dir if it doesn't exist
-preprocmanualDir = sprintf('%s/preprocmanual', allDir);
-if ~exist(preprocmanualDir,'dir')
-    mkdir(preprocmanualDir)
-end
-
 %% trigger search and preprocessing
-% SSVEP trials: prestim = 0.5 (before trigger), poststim = 3.1
-% epoched data will be saved in PrepSSVEP
+% 160 = Fixation (beginning of the trial)
+% 161 = Cue onset
+% 162 = target onset (target present trials)
+% 166 = target onset (cue-only trials)
+% 163 = Response cue onset
 
 cfg                     = [];
 cfg.dataset             = sqdfile;
-cfg.trialdef.prestim    = 0.5; % sec
-cfg.trialdef.poststim   = 3.1;
-cfg.trialdef.trig       = [161:164,167];
+cfg.trialdef.prestim    = 0.6; % sec
+cfg.trialdef.poststim   = 1.5;
+cfg.trialdef.trig       = 162;%[161:164,167]
 threshold = 2.5;
 [trl,Events]            = mytrialfun_all(cfg,threshold,[]);
 
@@ -173,10 +171,3 @@ cfg                   = [];
 cfg.channel           = 'MEG';
 data                  = ft_preprocessing(cfg,prep_target);
 clean_data1           = ft_rejectartifact(artf,data)
-
-
-
-
-
-
-

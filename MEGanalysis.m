@@ -25,6 +25,12 @@ sessionDir = [obs '/meg/' attCond '/' fileBase];
 dataDir = sprintf('%s/%s/preproc', exptDir, sessionDir);
 preprocDir = sprintf('%s/%s/preprocmanual', exptDir, sessionDir);
 
+%%% make the preproc dir if it doesn't exist
+preprocmanualDir = sprintf('%s/preprocmanual', [exptDir sessionDir]);
+if ~exist(preprocmanualDir,'dir')
+    mkdir(preprocmanualDir)
+end
+
 runFiles = dir(sprintf('%s/%s*.sqd', preprocDir, fileBase));
 if isempty(runFiles)
     %% segment original sqd into runs
@@ -36,7 +42,7 @@ if isempty(runFiles)
     
     %% move run files into preproc directory
     runFiles = dir(sprintf('%s/*half*.sqd', dataDir));
-    for iRun = 1:nRuns
+    for iRun = runs
         movefile(sprintf('%s/%s', dataDir, runFiles(iRun).name), preprocDir)
     end
 else
@@ -47,5 +53,14 @@ else
 end
 
 %% Manual Inspection through Fieldtrip
+%RUN: ld_manualInspection
 
-ld_manualInspection
+%% Epoching (cue, for just cue-only trials, or display, for just display-present trials)
+
+%% Separating per condition - Saving as a mat file
+ 
+%% ERP analysis
+
+%% Time-frequency analysis
+
+%% Phase-locking analysis

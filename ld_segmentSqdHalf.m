@@ -51,7 +51,6 @@ if nTrigs~=nTrigsExpected
     return
 end
 
-keyboard
 %% exclude stray triggers
 % manual (different for each subject)
 if nTrigs>nTrigsExpected
