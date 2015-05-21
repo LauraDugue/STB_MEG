@@ -61,7 +61,7 @@ for iRun = 1:nRuns
     runFile = sprintf('%s/%s_run%02d.sqd', preprocDir, fileBase, run);
     preprocFileName = ld_MEGPreproc(runFile, figDir, badChannels);
 end
-keyboard
+
 %% combine run files into preprocessed sqd
 analStr = getTag(preprocFileName);
 outFileName = sprintf('%s_%s.sqd', fileBase, analStr);
