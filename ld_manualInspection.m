@@ -25,11 +25,12 @@ hdr = ft_read_header(sqdfile);
 
 cfg                     = [];
 cfg.dataset             = sqdfile;
-cfg.trialdef.prestim    = 0.6; % sec
+cfg.trialdef.prestim    = 0.3; % sec
 cfg.trialdef.poststim   = 1.5;
 cfg.trialdef.trig       = 162;%[161:164,167]
-threshold = 2.5;
-[trl,Events]            = mytrialfun_all(cfg,threshold,[]);
+trigNum                 = 480;
+threshold               = 2.5;
+[trl,Events]            = mytrialfun_all(cfg,threshold,trigNum);
 
 prep_data             = ft_preprocessing(struct('dataset',sqdfile,...
     'channel','MEG','continuous','yes','trl',trl));
