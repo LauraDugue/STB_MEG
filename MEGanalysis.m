@@ -154,11 +154,48 @@ figure;hold on;
 plot(timePeriod,avgcueOnly1(:,:));title('Cue-only trials')
 
 badChannels = [];
-inds = setdiff(0:156,badChannels)+1;;
+inds = setdiff(0:156,badChannels)+1;
+cueOnly = squeeze(avgcueOnly1(500:1500,:,:));
+avgcueOnly1_157 = to157chan(cueOnly,inds,'zeros');
 
 figure;
-fH = ssm_plotOnMesh(avgcueOnly1_157(1,:)', 'Cue-only', [], [], '2d');
+fH = ssm_plotOnMesh(avgcueOnly1_157(1,:), 'Cue-only', [], data_hdr, '2d');
 % set(gca,'CLim',[0 4])
+
 %% Time-frequency analysis
+exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
+obs = 'id';
+attCond = 'exo';
+fileBase = 'R0947_STB_4.28.15';
+sessionDir = [obs '/meg/' attCond '/' fileBase];
+matDir = 'matEpoch';
+trigName = 'cueOnset';
+
+load([exptDir '/' sessionDir '/' matDir '/validData_' trigName '.mat'])
+load([exptDir '/' sessionDir '/' matDir '/invalidData_' trigName '.mat'])
+load([exptDir '/' sessionDir '/' matDir '/cueOnlyData_' trigName '.mat'])
+
+%%% make the timeFreq dir if it doesn't exist
+timeFreqDir = sprintf('%s/timeFreq', [exptDir '/' sessionDir]);
+if ~exist(timeFreqDir,'dir')
+    mkdir(timeFreqDir)
+end
+
+for elec = 1:157
+    % Valid trials
+    [tf, freqs, times] = timefreq(squeeze(validData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_valid.mat'],'tf','freqs','times');
+    % Invalid trials
+    [tf, freqs, times] = timefreq(squeeze(invalidData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_invalid.mat'],'tf','freqs','times');
+    % CueOnly trials
+    [tf, freqs, times] = timefreq(squeeze(cueOnlyData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_cueOnlyData.mat'],'tf','freqs','times');
+end
 
 %% Phase-locking analysis
+
+
+
+
+
