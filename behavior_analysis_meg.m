@@ -18,7 +18,9 @@ data = data(1,:);                            % save the name of the stim files
 numRuns = 1:length(data);                    % determine the number of files to analyze
 
 %% Determine performance for all the runs
-sessionValid = [];sessionInvalid = [];sessioncueOnly = [];
+sessionValid = [];sessionInvalid = [];
+sessionValidCorrect = [];sessionValidIncorrect = [];sessionInvalidCorrect = [];sessionInvalidIncorrect = [];
+sessioncueOnly = [];sessioncueOnlyLeft = [];sessioncueOnlyRight = [];
 for iRun = numRuns
     
     load([dirData '/' data{iRun}])
@@ -65,17 +67,30 @@ for iRun = numRuns
         invalid = find(stimulus.trialSeq(:,1) == 5 | stimulus.trialSeq(:,1) == 6 | ...
             stimulus.trialSeq(:,1) == 7 | stimulus.trialSeq(:,1) == 8);
         cue_only = find(stimulus.trialSeq(:,1) == 9 | stimulus.trialSeq(:,1) == 10);
+        cue_only_left = find((stimulus.trialSeq(:,1) == 9 | stimulus.trialSeq(:,1) == 10)&stimulus.trialSeq(:,2) == 1);
+        cue_only_right = find((stimulus.trialSeq(:,1) == 9 | stimulus.trialSeq(:,1) == 10)&stimulus.trialSeq(:,2) == 2);
     end
     
     ansValid(iRun,:) = answer(valid);
     rtValid(iRun,:) = reactTime(valid);
     ansInvalid(iRun,:) = answer(invalid);
     rtInvalid(iRun,:) = reactTime(invalid);
+    
     sessionValid = [sessionValid;valid+(size(stimulus.trialSeq,1)*(iRun-1))];
     sessionInvalid = [sessionInvalid;invalid+(size(stimulus.trialSeq,1)*(iRun-1))];
+    
+    sessionValidCorrect = [sessionValidCorrect;valid(ansValid(iRun,:)==1)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessionValidIncorrect = [sessionValidIncorrect;valid(ansValid(iRun,:)==0)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessionInvalidCorrect = [sessionInvalidCorrect;invalid(ansInvalid(iRun,:)==1)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessionInvalidIncorrect = [sessionInvalidIncorrect;invalid(ansInvalid(iRun,:)==0)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    
     sessioncueOnly = [sessioncueOnly;cue_only+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessioncueOnlyLeft = [sessioncueOnlyLeft;cue_only_left+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessioncueOnlyRight = [sessioncueOnlyRight;cue_only_right+(size(stimulus.trialSeq,1)*(iRun-1))];
 end    
-save('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Log Files/Conditions/indexBehavior.mat','sessionValid','sessionInvalid','sessioncueOnly')
+save('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Log Files/Conditions/indexBehavior.mat',...
+    'sessionValid','sessionInvalid','sessioncueOnly','sessionValidCorrect','sessionValidIncorrect','sessionInvalidCorrect','sessionInvalidIncorrect',...
+    'sessioncueOnlyLeft','sessioncueOnlyRight')
 %% Create averaged performance for Valid and invalid conditions for each run
 avgPerfValid = (sum(ansValid,2) ./ size(ansValid, 2));
 avgPerfInvalid = (sum(ansInvalid,2) ./ size(ansInvalid, 2));
@@ -124,3 +139,4 @@ print ('-djpeg', '-r500',namefig);
 
 
 
+ 

@@ -75,6 +75,7 @@ for half = 1:2
     ld_epoch(data,trigChan,trigName,exptDir,sessionDir,preproc,matDir,fileBase);
     
     load([exptDir '/' sessionDir '/' matDir '/epochedData_' data '_' trigName '.mat'])
+    keyboard
     epochedData = cat(3,epochedData,trigData);
 end
 savename = sprintf('%s/%s/%s_epoch_workspace.mat', saveDir);
@@ -92,12 +93,26 @@ trigName = 'cueOnset';
 load([exptDir '/' sessionDir '/' matDir '/epochedData_' trigName '.mat'])
 load([exptDir '/' sessionDir '/Log Files/Conditions/indexBehavior.mat'])
 
-validData = epochedData(:,:,sessionValid);
-save([exptDir '/' sessionDir '/' matDir '/validData_' trigName '.mat'],'validData','nSamples','nChannels','nTrigs','trigName','-v7.3');
-invalidData = epochedData(:,:,sessionInvalid);
-save([exptDir '/' sessionDir '/' matDir '/invalidData_' trigName '.mat'],'invalidData','nSamples','nChannels','nTrigs','trigName','-v7.3');
-cueOnlyData = epochedData(:,:,sessioncueOnly);
-save([exptDir '/' sessionDir '/' matDir '/cueOnlyData_' trigName '.mat'],'cueOnlyData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+% validData = epochedData(:,:,sessionValid);
+% save([exptDir '/' sessionDir '/' matDir '/validData_' trigName '.mat'],'validData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+% invalidData = epochedData(:,:,sessionInvalid);
+% save([exptDir '/' sessionDir '/' matDir '/invalidData_' trigName '.mat'],'invalidData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+% cueOnlyData = epochedData(:,:,sessioncueOnly);
+% save([exptDir '/' sessionDir '/' matDir '/cueOnlyData_' trigName '.mat'],'cueOnlyData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+
+% validCorrectData = epochedData(:,:,sessionValidCorrect);
+% save([exptDir '/' sessionDir '/' matDir '/validCorrectData_' trigName '.mat'],'validCorrectData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+% validIncorrectData = epochedData(:,:,sessionValidIncorrect);
+% save([exptDir '/' sessionDir '/' matDir '/validIncorrectData_' trigName '.mat'],'validIncorrectData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+% invalidCorrectData = epochedData(:,:,sessionInvalidCorrect);
+% save([exptDir '/' sessionDir '/' matDir '/invalidCorrectData_' trigName '.mat'],'invalidCorrectData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+% invalidIncorrectData = epochedData(:,:,sessionInvalidIncorrect);
+% save([exptDir '/' sessionDir '/' matDir '/invalidIncorrectData_' trigName '.mat'],'invalidIncorrectData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+
+cueOnlyLeftData = epochedData(:,:,sessioncueOnlyLeft);
+save([exptDir '/' sessionDir '/' matDir '/cueOnlyLeftData_' trigName '.mat'],'cueOnlyLeftData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+cueOnlyRightData = epochedData(:,:,sessioncueOnlyRight);
+save([exptDir '/' sessionDir '/' matDir '/cueOnlyRightData_' trigName '.mat'],'cueOnlyRightData','nSamples','nChannels','nTrigs','trigName','-v7.3');
 
 %% ERP analysis - Load data
 exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
@@ -171,9 +186,14 @@ sessionDir = [obs '/meg/' attCond '/' fileBase];
 matDir = 'matEpoch';
 trigName = 'cueOnset';
 
-load([exptDir '/' sessionDir '/' matDir '/validData_' trigName '.mat'])
-load([exptDir '/' sessionDir '/' matDir '/invalidData_' trigName '.mat'])
-load([exptDir '/' sessionDir '/' matDir '/cueOnlyData_' trigName '.mat'])
+% load([exptDir '/' sessionDir '/' matDir '/validCorrectData_' trigName '.mat'])
+% load([exptDir '/' sessionDir '/' matDir '/validIncorrectData_' trigName '.mat'])
+% load([exptDir '/' sessionDir '/' matDir '/invalidCorrectData_' trigName '.mat'])
+% load([exptDir '/' sessionDir '/' matDir '/invalidIncorrectData_' trigName '.mat'])
+% load([exptDir '/' sessionDir '/' matDir '/cueOnlyData_' trigName '.mat'])
+
+load([exptDir '/' sessionDir '/' matDir '/cueOnlyLeftData_' trigName '.mat'])
+load([exptDir '/' sessionDir '/' matDir '/cueOnlyRightData_' trigName '.mat'])
 
 %%% make the timeFreq dir if it doesn't exist
 timeFreqDir = sprintf('%s/timeFreq', [exptDir '/' sessionDir]);
@@ -182,16 +202,94 @@ if ~exist(timeFreqDir,'dir')
 end
 
 for elec = 1:157
-    % Valid trials
-    [tf, freqs, times] = timefreq(squeeze(validData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
-    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_valid.mat'],'tf','freqs','times');
-    % Invalid trials
-    [tf, freqs, times] = timefreq(squeeze(invalidData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
-    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_invalid.mat'],'tf','freqs','times');
-    % CueOnly trials
-    [tf, freqs, times] = timefreq(squeeze(cueOnlyData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
-    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_cueOnlyData.mat'],'tf','freqs','times');
+%     % Valid-Correct trials
+%     [tf, freqs, times] = timefreq(squeeze(validCorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_validCorrect.mat'],'tf','freqs','times');
+%     % Valid-Incorrect trials
+%     [tf, freqs, times] = timefreq(squeeze(validIncorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_validIncorrect.mat'],'tf','freqs','times');
+%     % Invalid-Correct trials
+%     [tf, freqs, times] = timefreq(squeeze(invalidCorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_invalidCorrect.mat'],'tf','freqs','times');
+%     % Invalid-Incorrect trials
+%     [tf, freqs, times] = timefreq(squeeze(invalidIncorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_invalidIncorrect.mat'],'tf','freqs','times');
+%     % CueOnly trials
+%     [tf, freqs, times] = timefreq(squeeze(cueOnlyData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_cueOnly.mat'],'tf','freqs','times');
+    % CueOnlyLeft trials
+    keyboard
+    [tf, freqs, times] = timefreq(squeeze(cueOnlyLeftData(:,elec,:)), 1000, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 1000, 'freqscale', 'log', 'nfreqs', 50);
+    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_cueOnlyLeft.mat'],'tf','freqs','times');
+    % CueOnlyRight trials
+    [tf, freqs, times] = timefreq(squeeze(cueOnlyRightData(:,elec,:)), 1000, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 1000, 'freqscale', 'log', 'nfreqs', 50);
+    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_cueOnlyRight.mat'],'tf','freqs','times');
 end
+
+%% Amplitude analysis
+
+exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
+obs = 'id';
+attCond = 'exo';
+fileBase = 'R0947_STB_4.28.15';
+sessionDir = [obs '/meg/' attCond '/' fileBase];
+matDir = 'matEpoch';
+trigName = 'cueOnset';
+
+%%% make the amplitude dir if it doesn't exist
+amplitudeDir = sprintf('%s/amplitude', [exptDir '/' sessionDir]);
+if ~exist(amplitudeDir,'dir')
+    mkdir(amplitudeDir)
+end
+
+%%% run amplitude analysis
+dirmat = [exptDir '/' sessionDir];
+electrods = 1:157;
+listCond = {'cueOnlyLeft','cueOnlyRight','validCorrect','validIncorrect','invalidCorrect','invalidIncorrect'};%
+
+for cond = listCond
+    for elec = electrods
+        dirElec = [dirmat '/timeFreq/' obs '_elec' num2str(elec) '_' cond{:}];
+        load(dirElec)
+        amplitude = mean(abs(tf),3);
+        save([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_' cond{:} '.mat'],'amplitude','freqs','times');
+    end
+end
+
+%% Plot amplitudes
+exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
+obs = 'id';
+attCond = 'exo';
+fileBase = 'R0947_STB_4.28.15';
+sessionDir = [obs '/meg/' attCond '/' fileBase];
+matDir = 'matEpoch';
+trigName = 'cueOnset';
+
+%%% Condition to plot
+cond = {'cueOnlyLeft'};
+dirmat = [exptDir '/' sessionDir];
+electrods = 1:157;
+amplitude_mean = zeros(50,512);
+
+for elec = electrods
+    load([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_' cond{:} '.mat'])
+    amplitude_mean = amplitude_mean + amplitude;
+end
+amplitude_mean = amplitude_mean/length(electrods);
+%%
+figure;
+surf(times-500,freqs(1:50),double(amplitude_mean));
+hold on;
+view(0,90);
+set(gcf,'Renderer','Zbuffer');
+shading interp;
+colorbar
+% load('Ruf_colormap3.mat');colormap(mymap);
+% set(gca,'clim',[0 700])
+% set(gca,'xlim',[-500 1000])
+set(gca,'ylim',[2 100])
+line([0 0], [0 100], [max(max(abs(amplitude_mean))) max(max(abs(amplitude_mean)))],'Color', 'w','LineStyle','--','LineWidth',2)
+hold off;
 
 %% Phase-locking analysis
 
