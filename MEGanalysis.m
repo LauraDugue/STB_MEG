@@ -8,8 +8,8 @@
 
 %% Add the path for fieldtrip and eeglab if necessary
 addpath(genpath('/users2/purpadmin/Laura/MRI/GitRepo/fieldtrip'));
-addpath(genpath('/users2/purpadmin/Laura/MRI/GitRepo/eeglab13_4_4b'));
-addpath(genpath('/users2/purpadmin/Laura/MRI/GitRepo/rufinLab'));
+% addpath(genpath('/users2/purpadmin/Laura/MRI/GitRepo/eeglab13_4_4b'));
+% addpath(genpath('/users2/purpadmin/Laura/MRI/GitRepo/rufinLab'));
 
 %% Run the pre-processing of the data
 
@@ -242,6 +242,7 @@ listCond = {'cueOnlyLeft','cueOnlyRight','validCorrect','validIncorrect','invali
 
 for cond = listCond
     for elec = electrods
+        % load data
         dirElec = [dirmat '/timeFreq/' obs '_elec' num2str(elec) '_' cond{:}];
         load(dirElec)
         % compute amplitude
@@ -252,7 +253,7 @@ for cond = listCond
         baseline_correct = repmat(baseline_correct,1,size(times,2));
         amplitude_correct = amplitude - baseline_correct;
         save([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_correct_' cond{:} '.mat'],'amplitude_correct','freqs','times');
-        % compute
+        % compute standard deviation 
         amplitude_std_correct = std(abs(tf),[],3).^2/size(tf,3);
         save([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_std_correct_' cond{:} '.mat'],'amplitude_std_correct','freqs','times');
         
@@ -269,7 +270,8 @@ matDir = 'matEpoch';
 trigName = 'cueOnset';
 
 %%% Condition to plot
-cond = {'cueOnlyLeft'};
+cond = {'validCorrect'};
+% listCond = {'cueOnlyLeft','cueOnlyRight','validCorrect','validIncorrect','invalidCorrect','invalidIncorrect'};%
 dirmat = [exptDir '/' sessionDir];
 electrods = 1:157;
 amplitude_mean = zeros(50,512);
@@ -301,17 +303,20 @@ set(gcf,'Renderer','Zbuffer');
 shading interp;
 colorbar
 % load('Ruf_colormap3.mat');colormap(mymap);
-set(gca,'clim',[-3000 3000])
+set(gca,'clim',[-1000 1000])
 set(gca,'xlim',[-200 1200])
 set(gca,'ylim',[2 100])
-line([0 0], [0 100], [max(max(abs(amplitude_mean))) max(max(abs(amplitude_mean)))],'Color', 'w','LineStyle','--','LineWidth',2)
+line([0 0], [0 100], [max(max(abs(amplitude_mean_correct))) max(max(abs(amplitude_mean_correct)))],'Color', 'w','LineStyle','--','LineWidth',2)
 if (strcmp(cond{:},{'invalidCorrect'}) || strcmp(cond{:},{'invalidIncorrect'})...
         || strcmp(cond{:},{'validCorrect'}) || strcmp(cond{:},{'validIncorrect'})) && strcmp(attCond,'exo')
-    line([160 160], [0 100], [max(max(abs(amplitude_mean))) max(max(abs(amplitude_mean)))],'Color', 'b','LineStyle','--','LineWidth',2)
+    line([160 160], [0 100], [max(max(abs(amplitude_mean_correct))) max(max(abs(amplitude_mean_correct)))],'Color', 'b','LineStyle','--','LineWidth',2)
 end
-line([1010 1010], [0 100], [max(max(abs(amplitude_mean))) max(max(abs(amplitude_mean)))],'Color', 'b','LineStyle','--','LineWidth',2)
+line([1010 1010], [0 100], [max(max(abs(amplitude_mean_correct))) max(max(abs(amplitude_mean_correct)))],'Color', 'b','LineStyle','--','LineWidth',2)
 title([cond{:} ' - all sensors'],'FontSize',16)
 hold off;
+
+namefig = sprintf(['/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Figures/tfmap-' cond{:}]);
+print('-djpeg','-r600',namefig);
 
 %% Plot p-values
 thepvals = pvals;%(:,323:end);  %%%  Selection of the p_values of interest
@@ -345,9 +350,139 @@ for k=1:length(children)
     set(children(k),'LineWidth',1.5);
 end
 
+%% Plot topography
+exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
+obs = 'id';
+attCond = 'exo';
+fileBase = 'R0947_STB_4.28.15';
+sessionDir = [obs '/meg/' attCond '/' fileBase];
+matDir = 'matEpoch';
+trigName = 'cueOnset';
+
+%%% Times and Freqs to plot
+indfreq = [8 12];%
+indtime = [400 800];
+
+%%% Condition to plot
+cond = {'cueOnlyLeft'};
+dirmat = [exptDir '/' sessionDir];
+electrods = 1:157;
+amplitude_mean = zeros(1,length(electrods));
+amplitude_mean_correct = zeros(1,length(electrods));
+amplitude_mean_std_correct = zeros(1,length(electrods));
+
+for elec = electrods
+    load([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_' cond{:} '.mat'])
+    load([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_correct_' cond{:} '.mat'])
+    load([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_std_correct_' cond{:} '.mat'])
+    
+    time = find(times >= (indtime(1)+ 500) & times <= (indtime(2)+ 500));
+    freq = find(freqs >= indfreq(1) & freqs <= indfreq(2));
+    
+    data = amplitude(freq,time); amplitude_mean(elec) = sum(data(:));
+    data = amplitude_correct(freq,time); amplitude_mean_correct(elec) = sum(data(:));
+    data = amplitude_std_correct(freq,time); amplitude_mean_std_correct(elec) = sum(data(:));
+end
+
+badChannels = [];
+inds = setdiff(0:156,badChannels)+1;
+data1_157 = to157chan(amplitude_mean_correct,inds,'zeros');
+
+load /Volumes/DRIVE1/DATA/laura/MEG/data_hdr.mat
+%%
+% cueLeft = data1_157;
+cueRight = data1_157;
+data = cueLeft - cueRight;
+
+%%
+figure;
+fH = ssm_plotOnMesh(data, 'cueLeft - cueRight', [], data_hdr, '2d');
+set(gca,'CLim',[-4000000 4000000])
+
+namefig = sprintf('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Figures/topo-cuelLeft-alpha');
+print('-djpeg','-r600',namefig);
+
+%%
+figure;
+fH = ssm_plotOnMesh(data, cond{:}, [], data_hdr, '2d');
+
 %% Phase-locking analysis
 
+exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
+obs = 'id';
+attCond = 'exo';
+fileBase = 'R0947_STB_4.28.15';
+sessionDir = [obs '/meg/' attCond '/' fileBase];
+matDir = 'matEpoch';
+trigName = 'cueOnset';
 
+%%% make the amplitude dir if it doesn't exist
+phaseLockingDir = sprintf('%s/phaseLocking', [exptDir '/' sessionDir]);
+if ~exist(phaseLockingDir,'dir')
+    mkdir(phaseLockingDir)
+end
+
+%%% run amplitude analysis
+dirmat = [exptDir '/' sessionDir];
+electrods = 1:157;
+listCond = {'cueOnlyLeft','cueOnlyRight','validCorrect','validIncorrect','invalidCorrect','invalidIncorrect'};%
+
+for cond = listCond
+    for elec = electrods
+        % load data
+        dirElec = [dirmat '/timeFreq/' obs '_elec' num2str(elec) '_' cond{:}];
+        load(dirElec)
+        % compute phase-locking
+        phaseLocking = abs(mean(tf./abs(tf),3));
+        save([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_' cond{:} '.mat'],'phaseLocking','freqs','times')
+        
+    end
+end
+
+%% Plot Phase-locking
+exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
+obs = 'id';
+attCond = 'exo';
+fileBase = 'R0947_STB_4.28.15';
+sessionDir = [obs '/meg/' attCond '/' fileBase];
+matDir = 'matEpoch';
+trigName = 'cueOnset';
+
+%%% Condition to plot
+cond = {'validIncorrect'};
+dirmat = [exptDir '/' sessionDir];
+electrods = 1:157;
+phaseLocking_mean = zeros(50,512);
+
+for elec = electrods
+    load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_' cond{:} '.mat'])
+    phaseLocking_mean = phaseLocking_mean + phaseLocking;
+end
+phaseLocking_mean = phaseLocking_mean./length(electrods);
+
+%% Plot amplitude
+figure;
+surf(times-500,freqs(1:50),double(phaseLocking_mean));
+hold on;
+view(0,90);
+set(gcf,'Renderer','Zbuffer');
+shading interp;
+colorbar
+% load('Ruf_colormap3.mat');colormap(mymap);
+set(gca,'clim',[0 .2])
+set(gca,'xlim',[-200 1200])
+set(gca,'ylim',[2 100])
+line([0 0], [0 100], [max(max(abs(phaseLocking_mean))) max(max(abs(phaseLocking_mean)))],'Color', 'w','LineStyle','--','LineWidth',2)
+if (strcmp(cond{:},{'invalidCorrect'}) || strcmp(cond{:},{'invalidIncorrect'})...
+        || strcmp(cond{:},{'validCorrect'}) || strcmp(cond{:},{'validIncorrect'})) && strcmp(attCond,'exo')
+    line([160 160], [0 100], [max(max(abs(phaseLocking_mean))) max(max(abs(phaseLocking_mean)))],'Color', 'b','LineStyle','--','LineWidth',2)
+end
+line([1010 1010], [0 100], [max(max(abs(phaseLocking_mean))) max(max(abs(phaseLocking_mean)))],'Color', 'b','LineStyle','--','LineWidth',2)
+title([cond{:} ' - all sensors'],'FontSize',16)
+hold off;
+
+namefig = sprintf('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Figures/tfmap-PL-validIncorrect');
+print('-djpeg','-r600',namefig);
 
 
 
