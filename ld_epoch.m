@@ -27,9 +27,6 @@ highSNRChannelsR = [];%[1 50 7 8];
 tstart = -500;
 tstop = 1500;
 
-% load data header for plotting topologies
-load /Volumes/DRIVE1/DATA/laura/MEG/data_hdr.mat
-
 %% Get the data
 trigMean = [];
 trigData = [];

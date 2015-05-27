@@ -75,7 +75,6 @@ for half = 1:2
     ld_epoch(data,trigChan,trigName,exptDir,sessionDir,preproc,matDir,fileBase);
     
     load([exptDir '/' sessionDir '/' matDir '/epochedData_' data '_' trigName '.mat'])
-    keyboard
     epochedData = cat(3,epochedData,trigData);
 end
 savename = sprintf('%s/%s/%s_epoch_workspace.mat', saveDir);
@@ -186,12 +185,10 @@ sessionDir = [obs '/meg/' attCond '/' fileBase];
 matDir = 'matEpoch';
 trigName = 'cueOnset';
 
-% load([exptDir '/' sessionDir '/' matDir '/validCorrectData_' trigName '.mat'])
-% load([exptDir '/' sessionDir '/' matDir '/validIncorrectData_' trigName '.mat'])
-% load([exptDir '/' sessionDir '/' matDir '/invalidCorrectData_' trigName '.mat'])
-% load([exptDir '/' sessionDir '/' matDir '/invalidIncorrectData_' trigName '.mat'])
-% load([exptDir '/' sessionDir '/' matDir '/cueOnlyData_' trigName '.mat'])
-
+load([exptDir '/' sessionDir '/' matDir '/validCorrectData_' trigName '.mat'])
+load([exptDir '/' sessionDir '/' matDir '/validIncorrectData_' trigName '.mat'])
+load([exptDir '/' sessionDir '/' matDir '/invalidCorrectData_' trigName '.mat'])
+load([exptDir '/' sessionDir '/' matDir '/invalidIncorrectData_' trigName '.mat'])
 load([exptDir '/' sessionDir '/' matDir '/cueOnlyLeftData_' trigName '.mat'])
 load([exptDir '/' sessionDir '/' matDir '/cueOnlyRightData_' trigName '.mat'])
 
@@ -202,27 +199,23 @@ if ~exist(timeFreqDir,'dir')
 end
 
 for elec = 1:157
-%     % Valid-Correct trials
-%     [tf, freqs, times] = timefreq(squeeze(validCorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
-%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_validCorrect.mat'],'tf','freqs','times');
-%     % Valid-Incorrect trials
-%     [tf, freqs, times] = timefreq(squeeze(validIncorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
-%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_validIncorrect.mat'],'tf','freqs','times');
-%     % Invalid-Correct trials
-%     [tf, freqs, times] = timefreq(squeeze(invalidCorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
-%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_invalidCorrect.mat'],'tf','freqs','times');
-%     % Invalid-Incorrect trials
-%     [tf, freqs, times] = timefreq(squeeze(invalidIncorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
-%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_invalidIncorrect.mat'],'tf','freqs','times');
-%     % CueOnly trials
-%     [tf, freqs, times] = timefreq(squeeze(cueOnlyData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
-%     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_cueOnly.mat'],'tf','freqs','times');
+    % Valid-Correct trials
+    [tf, freqs, times] = timefreq(squeeze(validCorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_validCorrect.mat'],'tf','freqs','times');
+    % Valid-Incorrect trials
+    [tf, freqs, times] = timefreq(squeeze(validIncorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_validIncorrect.mat'],'tf','freqs','times');
+    % Invalid-Correct trials
+    [tf, freqs, times] = timefreq(squeeze(invalidCorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_invalidCorrect.mat'],'tf','freqs','times');
+    % Invalid-Incorrect trials
+    [tf, freqs, times] = timefreq(squeeze(invalidIncorrectData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+    save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_invalidIncorrect.mat'],'tf','freqs','times');
     % CueOnlyLeft trials
-    keyboard
-    [tf, freqs, times] = timefreq(squeeze(cueOnlyLeftData(:,elec,:)), 1024, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+    [tf, freqs, times] = timefreq(squeeze(cueOnlyLeftData(:,elec,:)), 1000, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_cueOnlyLeft.mat'],'tf','freqs','times');
     % CueOnlyRight trials
-    [tf, freqs, times] = timefreq(squeeze(cueOnlyRightData(:,elec,:)), 512, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
+    [tf, freqs, times] = timefreq(squeeze(cueOnlyRightData(:,elec,:)), 1000, 'cycles', [1 15], 'freqs', [2 100], 'ntimesout', 512, 'freqscale', 'log', 'nfreqs', 50);
     save([timeFreqDir,'/', obs,'_elec' num2str(elec), '_cueOnlyRight.mat'],'tf','freqs','times');
 end
 
@@ -251,8 +244,18 @@ for cond = listCond
     for elec = electrods
         dirElec = [dirmat '/timeFreq/' obs '_elec' num2str(elec) '_' cond{:}];
         load(dirElec)
+        % compute amplitude
         amplitude = mean(abs(tf),3);
         save([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_' cond{:} '.mat'],'amplitude','freqs','times');
+        % compute baseline corrected amplitude
+        baseline_correct = mean(amplitude(:,1:61),2);
+        baseline_correct = repmat(baseline_correct,1,size(times,2));
+        amplitude_correct = amplitude - baseline_correct;
+        save([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_correct_' cond{:} '.mat'],'amplitude_correct','freqs','times');
+        % compute
+        amplitude_std_correct = std(abs(tf),[],3).^2/size(tf,3);
+        save([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_std_correct_' cond{:} '.mat'],'amplitude_std_correct','freqs','times');
+        
     end
 end
 
@@ -266,30 +269,81 @@ matDir = 'matEpoch';
 trigName = 'cueOnset';
 
 %%% Condition to plot
-cond = {'cueOnlyLeft'};
+cond = {'cueOnlyRight'};
 dirmat = [exptDir '/' sessionDir];
 electrods = 1:157;
 amplitude_mean = zeros(50,512);
+amplitude_mean_correct = zeros(50,512);
+amplitude_mean_std_correct = zeros(50,512);
 
 for elec = electrods
     load([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_' cond{:} '.mat'])
     amplitude_mean = amplitude_mean + amplitude;
+    load([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_correct_' cond{:} '.mat'])
+    amplitude_mean_correct = amplitude_mean_correct  + amplitude_correct;
+    load([dirmat '/amplitude/' obs '_elec' num2str(elec) '_amp_std_correct_' cond{:} '.mat'])
+    amplitude_mean_std_correct = amplitude_mean_std_correct  + amplitude_std_correct;
 end
-amplitude_mean = amplitude_mean/length(electrods);
-%%
+amplitude_mean = amplitude_mean./length(electrods);
+amplitude_mean_correct = amplitude_mean_correct./length(electrods);
+amplitude_mean_std_correct = (sqrt(amplitude_mean_std_correct)./length(electrods))./sqrt(length(electrods));
+
+zscore = amplitude_mean_correct./amplitude_mean_std_correct;
+pvals = 1 - normcdf(double(zscore));
+pvals(pvals==0) = 0.0000000000000001;
+
+%% Plot amplitude
 figure;
-surf(times-500,freqs(1:50),double(amplitude_mean));
+surf(times-500,freqs(1:50),double(amplitude_mean_correct));
 hold on;
 view(0,90);
 set(gcf,'Renderer','Zbuffer');
 shading interp;
 colorbar
 % load('Ruf_colormap3.mat');colormap(mymap);
-% set(gca,'clim',[0 700])
-% set(gca,'xlim',[-500 1000])
+set(gca,'clim',[-3000 3000])
+set(gca,'xlim',[-200 1200])
 set(gca,'ylim',[2 100])
 line([0 0], [0 100], [max(max(abs(amplitude_mean))) max(max(abs(amplitude_mean)))],'Color', 'w','LineStyle','--','LineWidth',2)
+if (strcmp(cond{:},{'invalidCorrect'}) || strcmp(cond{:},{'invalidIncorrect'})...
+        || strcmp(cond{:},{'validCorrect'}) || strcmp(cond{:},{'validIncorrect'})) && strcmp(attCond,'exo')
+    line([160 160], [0 100], [max(max(abs(amplitude_mean))) max(max(abs(amplitude_mean)))],'Color', 'b','LineStyle','--','LineWidth',2)
+end
+line([1010 1010], [0 100], [max(max(abs(amplitude_mean))) max(max(abs(amplitude_mean)))],'Color', 'b','LineStyle','--','LineWidth',2)
+title([cond{:} ' - all sensors'],'FontSize',16)
 hold off;
+
+%% Plot p-values
+thepvals = pvals;%(:,323:end);  %%%  Selection of the p_values of interest
+[p_fdr p_masked] = fdr(thepvals,0.000000000000001); %%% Alpha = 10%
+fdr_map=zeros(size(thepvals));
+if (~isempty(p_masked)); fdr_map(thepvals<p_fdr)=1; end
+p = zeros(size(pvals));%
+p(:,:) = fdr_map;
+z = zeros(size((1:100)));
+z(:) = 20;
+
+figure;
+surf(times-500,freqs(1:50),-log10(pvals));
+hold on;
+view(0,90);
+set(gcf,'Renderer','Zbuffer');
+shading interp;
+axis([times(1)-500 times(end)-500 freqs(1) freqs(end)]);
+[a,b]=contour(times-500,freqs,1-sign(p*11),1,'Color',[0 0 0]);
+colorbar
+% load('Ruf_colormap3.mat'); colormap(mymap);
+set(gca,'clim',[0 20])
+set(gca,'xlim',[-200 1200])
+set(gca,'ylim',[2 100])
+line([0 0], [0 100], [max(max(abs(double(zscore)))) max(max(abs(double(zscore))))], 'Color', 'k','LineWidth',2)
+hold off;
+
+children=get(b,'Children');
+for k=1:length(children)
+    set(children(k),'ZData',ones(1,length(get(children(k),'YData')))*14);
+    set(children(k),'LineWidth',1.5);
+end
 
 %% Phase-locking analysis
 
