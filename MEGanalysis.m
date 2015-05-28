@@ -7,6 +7,7 @@
 %             for the MEG analysis
 
 %% Add the path for fieldtrip and eeglab if necessary
+%%% ATTENTION: eeglab and fieldtrip have redondable variables. DO NOT add both to the path at the same time!!!!
 addpath(genpath('/users2/purpadmin/Laura/MRI/GitRepo/fieldtrip'));
 % addpath(genpath('/users2/purpadmin/Laura/MRI/GitRepo/eeglab13_4_4b'));
 % addpath(genpath('/users2/purpadmin/Laura/MRI/GitRepo/rufinLab'));
