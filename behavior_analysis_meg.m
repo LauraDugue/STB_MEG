@@ -20,6 +20,8 @@ numRuns = 1:length(data);                    % determine the number of files to 
 %% Determine performance for all the runs
 sessionValid = [];sessionInvalid = [];
 sessionValidCorrect = [];sessionValidIncorrect = [];sessionInvalidCorrect = [];sessionInvalidIncorrect = [];
+sessionValidCorrectLeft = [];sessionValidIncorrectLeft = [];sessionInvalidCorrectLeft = [];sessionInvalidIncorrectLeft = [];
+sessionValidCorrectRight = [];sessionValidIncorrectRight = [];sessionInvalidCorrectRight = [];sessionInvalidIncorrectRight = [];
 sessioncueOnly = [];sessioncueOnlyLeft = [];sessioncueOnlyRight = [];
 for iRun = numRuns
     
@@ -59,13 +61,31 @@ for iRun = numRuns
         valid = find(stimulus.trialSeq(:,1) == 1 | stimulus.trialSeq(:,1) == 2 |...
             stimulus.trialSeq(:,1) == 3 | stimulus.trialSeq(:,1) == 4 |...
             stimulus.trialSeq(:,1) == 5 | stimulus.trialSeq(:,1) == 6);
+        valid_left = find((stimulus.trialSeq(:,1) == 1 | stimulus.trialSeq(:,1) == 2 |...
+            stimulus.trialSeq(:,1) == 3 | stimulus.trialSeq(:,1) == 4 |...
+            stimulus.trialSeq(:,1) == 5 | stimulus.trialSeq(:,1) == 6)&stimulus.trialSeq(:,2) == 1);
+        valid_right = find((stimulus.trialSeq(:,1) == 1 | stimulus.trialSeq(:,1) == 2 |...
+            stimulus.trialSeq(:,1) == 3 | stimulus.trialSeq(:,1) == 4 |...
+            stimulus.trialSeq(:,1) == 5 | stimulus.trialSeq(:,1) == 6)&stimulus.trialSeq(:,2) == 2);
         invalid = find(stimulus.trialSeq(:,1) == 7 | stimulus.trialSeq(:,1) == 8);
+        invalid_left = find((stimulus.trialSeq(:,1) == 7 | stimulus.trialSeq(:,1) == 8)&stimulus.trialSeq(:,2) == 1);
+        invalid_right = find((stimulus.trialSeq(:,1) == 7 | stimulus.trialSeq(:,1) == 8)&stimulus.trialSeq(:,2) == 2);
         cue_only = find(stimulus.trialSeq(:,1) == 9 | stimulus.trialSeq(:,1) == 10);
+        cue_only_left = find((stimulus.trialSeq(:,1) == 9 | stimulus.trialSeq(:,1) == 10)&stimulus.trialSeq(:,2) == 1);
+        cue_only_right = find((stimulus.trialSeq(:,1) == 9 | stimulus.trialSeq(:,1) == 10)&stimulus.trialSeq(:,2) == 2);
     elseif strcmp(attCond,'exo')
         valid = find(stimulus.trialSeq(:,1) == 1 | stimulus.trialSeq(:,1) == 2 |...
             stimulus.trialSeq(:,1) == 3 | stimulus.trialSeq(:,1) == 4);
+        valid_left = find((stimulus.trialSeq(:,1) == 1 | stimulus.trialSeq(:,1) == 2 |...
+            stimulus.trialSeq(:,1) == 3 | stimulus.trialSeq(:,1) == 4)&stimulus.trialSeq(:,2) == 1);
+        valid_right = find((stimulus.trialSeq(:,1) == 1 | stimulus.trialSeq(:,1) == 2 |...
+            stimulus.trialSeq(:,1) == 3 | stimulus.trialSeq(:,1) == 4)&stimulus.trialSeq(:,2) == 2);
         invalid = find(stimulus.trialSeq(:,1) == 5 | stimulus.trialSeq(:,1) == 6 | ...
             stimulus.trialSeq(:,1) == 7 | stimulus.trialSeq(:,1) == 8);
+        invalid_left = find((stimulus.trialSeq(:,1) == 5 | stimulus.trialSeq(:,1) == 6 | ...
+            stimulus.trialSeq(:,1) == 7 | stimulus.trialSeq(:,1) == 8)&stimulus.trialSeq(:,2) == 1);
+        invalid_right = find((stimulus.trialSeq(:,1) == 5 | stimulus.trialSeq(:,1) == 6 | ...
+            stimulus.trialSeq(:,1) == 7 | stimulus.trialSeq(:,1) == 8)&stimulus.trialSeq(:,2) == 2);
         cue_only = find(stimulus.trialSeq(:,1) == 9 | stimulus.trialSeq(:,1) == 10);
         cue_only_left = find((stimulus.trialSeq(:,1) == 9 | stimulus.trialSeq(:,1) == 10)&stimulus.trialSeq(:,2) == 1);
         cue_only_right = find((stimulus.trialSeq(:,1) == 9 | stimulus.trialSeq(:,1) == 10)&stimulus.trialSeq(:,2) == 2);
@@ -76,6 +96,16 @@ for iRun = numRuns
     ansInvalid(iRun,:) = answer(invalid);
     rtInvalid(iRun,:) = reactTime(invalid);
     
+    ansValidLeft(iRun,:) = answer(valid_left);
+    rtValidLeft(iRun,:) = reactTime(valid_left);
+    ansInvalidLeft(iRun,:) = answer(invalid_left);
+    rtInvalidLeft(iRun,:) = reactTime(invalid_left);
+    
+    ansValidRight(iRun,:) = answer(valid_right);
+    rtValidRight(iRun,:) = reactTime(valid_right);
+    ansInvalidRight(iRun,:) = answer(invalid_right);
+    rtInvalidRight(iRun,:) = reactTime(invalid_right);
+    
     sessionValid = [sessionValid;valid+(size(stimulus.trialSeq,1)*(iRun-1))];
     sessionInvalid = [sessionInvalid;invalid+(size(stimulus.trialSeq,1)*(iRun-1))];
     
@@ -84,13 +114,24 @@ for iRun = numRuns
     sessionInvalidCorrect = [sessionInvalidCorrect;invalid(ansInvalid(iRun,:)==1)+(size(stimulus.trialSeq,1)*(iRun-1))];
     sessionInvalidIncorrect = [sessionInvalidIncorrect;invalid(ansInvalid(iRun,:)==0)+(size(stimulus.trialSeq,1)*(iRun-1))];
     
+    sessionValidCorrectLeft = [sessionValidCorrectLeft;valid_left(ansValidLeft(iRun,:)==1)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessionValidIncorrectLeft = [sessionValidIncorrectLeft;valid_left(ansValidLeft(iRun,:)==0)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessionInvalidCorrectLeft = [sessionInvalidCorrectLeft;invalid_left(ansInvalidLeft(iRun,:)==1)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessionInvalidIncorrectLeft = [sessionInvalidIncorrectLeft;invalid_left(ansInvalidLeft(iRun,:)==0)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    
+    sessionValidCorrectRight = [sessionValidCorrectRight;valid_right(ansValidRight(iRun,:)==1)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessionValidIncorrectRight = [sessionValidIncorrectRight;valid_right(ansValidRight(iRun,:)==0)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessionInvalidCorrectRight = [sessionInvalidCorrectRight;invalid_right(ansInvalidRight(iRun,:)==1)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    sessionInvalidIncorrectRight = [sessionInvalidIncorrectRight;invalid_right(ansInvalidRight(iRun,:)==0)+(size(stimulus.trialSeq,1)*(iRun-1))];
+    
     sessioncueOnly = [sessioncueOnly;cue_only+(size(stimulus.trialSeq,1)*(iRun-1))];
     sessioncueOnlyLeft = [sessioncueOnlyLeft;cue_only_left+(size(stimulus.trialSeq,1)*(iRun-1))];
     sessioncueOnlyRight = [sessioncueOnlyRight;cue_only_right+(size(stimulus.trialSeq,1)*(iRun-1))];
 end    
 save('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Log Files/Conditions/indexBehavior.mat',...
     'sessionValid','sessionInvalid','sessioncueOnly','sessionValidCorrect','sessionValidIncorrect','sessionInvalidCorrect','sessionInvalidIncorrect',...
-    'sessioncueOnlyLeft','sessioncueOnlyRight')
+    'sessioncueOnlyLeft','sessioncueOnlyRight','sessionValidCorrectLeft','sessionValidIncorrectLeft','sessionInvalidCorrectLeft','sessionInvalidIncorrectLeft',...
+    'sessionValidCorrectRight','sessionValidIncorrectRight','sessionInvalidCorrectRight','sessionInvalidIncorrectRight')
 %% Create averaged performance for Valid and invalid conditions for each run
 avgPerfValid = (sum(ansValid,2) ./ size(ansValid, 2));
 avgPerfInvalid = (sum(ansInvalid,2) ./ size(ansInvalid, 2));

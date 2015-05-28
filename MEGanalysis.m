@@ -79,7 +79,7 @@ for half = 1:2
     epochedData = cat(3,epochedData,trigData);
 end
 savename = sprintf('%s/%s/%s_epoch_workspace.mat', saveDir);
-save([exptDir '/' sessionDir '/' matDir '/epochedData_' trigName '.mat'],'epochedData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+save([exptDir '/' sessionDir '/' matDir '/epochedData_elbi_' trigName '.mat'],'epochedData','nSamples','nChannels','nTrigs','trigName','-v7.3');
 
 %% Separating per condition - Saving as a mat file
 exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
@@ -90,24 +90,26 @@ sessionDir = [obs '/meg/' attCond '/' fileBase];
 matDir = 'matEpoch';
 trigName = 'cueOnset';
 
-load([exptDir '/' sessionDir '/' matDir '/epochedData_' trigName '.mat'])
+load([exptDir '/' sessionDir '/' matDir '/epochedData_elbi_' trigName '.mat'])
 load([exptDir '/' sessionDir '/Log Files/Conditions/indexBehavior.mat'])
 
-% validData = epochedData(:,:,sessionValid);
-% save([exptDir '/' sessionDir '/' matDir '/validData_' trigName '.mat'],'validData','nSamples','nChannels','nTrigs','trigName','-v7.3');
-% invalidData = epochedData(:,:,sessionInvalid);
-% save([exptDir '/' sessionDir '/' matDir '/invalidData_' trigName '.mat'],'invalidData','nSamples','nChannels','nTrigs','trigName','-v7.3');
-% cueOnlyData = epochedData(:,:,sessioncueOnly);
-% save([exptDir '/' sessionDir '/' matDir '/cueOnlyData_' trigName '.mat'],'cueOnlyData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+validCorrectLeftData = epochedData(:,:,sessionValidCorrectLeft);
+save([exptDir '/' sessionDir '/' matDir '/validCorrectLeftData_' trigName '.mat'],'validCorrectLeftData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+validIncorrectLeftData = epochedData(:,:,sessionValidIncorrectLeft);
+save([exptDir '/' sessionDir '/' matDir '/validIncorrectLeftData_' trigName '.mat'],'validIncorrectLeftData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+invalidCorrectLeftData = epochedData(:,:,sessionInvalidCorrectLeft);
+save([exptDir '/' sessionDir '/' matDir '/invalidCorrectLeftData_' trigName '.mat'],'invalidCorrectLeftData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+invalidIncorrectLeftData = epochedData(:,:,sessionInvalidIncorrectLeft);
+save([exptDir '/' sessionDir '/' matDir '/invalidIncorrectLeftData_' trigName '.mat'],'invalidIncorrectLeftData','nSamples','nChannels','nTrigs','trigName','-v7.3');
 
-% validCorrectData = epochedData(:,:,sessionValidCorrect);
-% save([exptDir '/' sessionDir '/' matDir '/validCorrectData_' trigName '.mat'],'validCorrectData','nSamples','nChannels','nTrigs','trigName','-v7.3');
-% validIncorrectData = epochedData(:,:,sessionValidIncorrect);
-% save([exptDir '/' sessionDir '/' matDir '/validIncorrectData_' trigName '.mat'],'validIncorrectData','nSamples','nChannels','nTrigs','trigName','-v7.3');
-% invalidCorrectData = epochedData(:,:,sessionInvalidCorrect);
-% save([exptDir '/' sessionDir '/' matDir '/invalidCorrectData_' trigName '.mat'],'invalidCorrectData','nSamples','nChannels','nTrigs','trigName','-v7.3');
-% invalidIncorrectData = epochedData(:,:,sessionInvalidIncorrect);
-% save([exptDir '/' sessionDir '/' matDir '/invalidIncorrectData_' trigName '.mat'],'invalidIncorrectData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+validCorrectRightData = epochedData(:,:,sessionValidCorrectRight);
+save([exptDir '/' sessionDir '/' matDir '/validCorrectRightData_' trigName '.mat'],'validCorrectRightData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+validIncorrectRightData = epochedData(:,:,sessionValidIncorrectRight);
+save([exptDir '/' sessionDir '/' matDir '/validIncorrectRightData_' trigName '.mat'],'validIncorrectRightData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+invalidCorrectRightData = epochedData(:,:,sessionInvalidCorrectRight);
+save([exptDir '/' sessionDir '/' matDir '/invalidCorrectRightData_' trigName '.mat'],'invalidCorrectRightData','nSamples','nChannels','nTrigs','trigName','-v7.3');
+invalidIncorrectRightData = epochedData(:,:,sessionInvalidIncorrectRight);
+save([exptDir '/' sessionDir '/' matDir '/invalidIncorrectRightData_' trigName '.mat'],'invalidIncorrectRightData','nSamples','nChannels','nTrigs','trigName','-v7.3');
 
 cueOnlyLeftData = epochedData(:,:,sessioncueOnlyLeft);
 save([exptDir '/' sessionDir '/' matDir '/cueOnlyLeftData_' trigName '.mat'],'cueOnlyLeftData','nSamples','nChannels','nTrigs','trigName','-v7.3');
