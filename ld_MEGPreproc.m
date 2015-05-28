@@ -20,7 +20,7 @@ end
 % preproc options
 Fl = 60; % line noise frequency
 environmentalDenoise = 1;
-applyLineNoiseFilter = 0; %0 for NO NOTCH FILTER
+applyLineNoiseFilter = 1; %0 for NO NOTCH FILTER
 removeBadChannels = 1;
 TSPCA = 0;
 components = 0; % pca/ica

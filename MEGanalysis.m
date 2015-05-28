@@ -34,7 +34,7 @@ if ~exist(preprocmanualDir,'dir')
 end
 
 %%% segment original sqd into runs
-dataFile = sprintf('%s/%s_ebi.sqd', dataDir, fileBase);
+dataFile = sprintf('%s/%s_elbi.sqd', dataDir, fileBase);
 
 % check settings in ld_segmentSqd before running!
 nRuns = ld_segmentSqdHalf(dataFile);
@@ -57,8 +57,8 @@ end
 % 162 = target onset (target present trials)
 % 166 = target onset (cue-only trials)
 % 163 = Response cue onset
-trigChan = 162; % epoched centered on cue onset
-trigName = 'displayOnset';
+trigChan = 161; % epoched centered on cue onset
+trigName = 'cueOnset';
 
 %%% directory
 exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
@@ -71,7 +71,7 @@ matDir = 'matEpoch';
 
 epochedData = [];
 for half = 1:2
-    data = ['ebi_half0' num2str(half)];
+    data = ['elbi_half0' num2str(half)];
     
     ld_epoch(data,trigChan,trigName,exptDir,sessionDir,preproc,matDir,fileBase);
     
