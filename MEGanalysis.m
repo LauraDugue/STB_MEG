@@ -337,7 +337,7 @@ for cond = listCond
     hold off;
     
     namefig = sprintf(['/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Figures/tfmap-' cond{:}]);
-%     print('-djpeg','-r600',namefig);
+    %     print('-djpeg','-r600',namefig);
 end
 
 %% Plot amplitudes - difference between correct and incorrect trials - condition-by-condition
@@ -520,8 +520,6 @@ obs = 'id';
 attCond = 'exo';
 fileBase = 'R0947_STB_4.28.15';
 sessionDir = [obs '/meg/' attCond '/' fileBase];
-matDir = 'matEpoch';
-trigName = 'cueOnset';
 
 %%% make the amplitude dir if it doesn't exist
 phaseLockingDir = sprintf('%s/phaseLocking', [exptDir '/' sessionDir]);
@@ -544,7 +542,6 @@ for cond = listCond
         % compute phase-locking
         phaseLocking = abs(mean(tf./abs(tf),3));
         save([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_' cond{:} '.mat'],'phaseLocking','freqs','times')
-        
     end
 end
 
@@ -597,4 +594,252 @@ for cond = listCond
     print('-djpeg','-r600',namefig);
     
 end
+
+%% Bootstrap of Phase-locking - Correct vs. Incorrect
+
+exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
+obs = 'id';
+attCond = 'exo';
+fileBase = 'R0947_STB_4.28.15';
+sessionDir = [obs '/meg/' attCond '/' fileBase];
+
+%%% make the amplitude dir if it doesn't exist
+bootPhaseLockingDir = sprintf('%s/bootPhaseLocking', [exptDir '/' sessionDir]);
+if ~exist(bootPhaseLockingDir,'dir')
+    mkdir(bootPhaseLockingDir)
+end
+
+dirmat = [exptDir '/' sessionDir];
+electrods = 1:157;
+repetition = 100;
+listCond = {'validCorrectLeft','validIncorrectLeft','invalidCorrectLeft','invalidIncorrectLeft',...
+    'validCorrectRight','validIncorrectRight','invalidCorrectRight','invalidIncorrectRight'};%
+
+for elec = electrods
+    for cond = listCond
+        % load data
+        dirElec = [dirmat '/timeFreq/' obs '_elec' num2str(elec) '_' cond{:}];
+        load(dirElec)
+        
+        if strcmp(cond{:},{'validCorrectLeft'})
+            tf_validCorrectLeft = tf;
+        elseif strcmp(cond{:},{'validIncorrectLeft'})
+            tf_validIncorrectLeft = tf;
+        elseif strcmp(cond{:},{'invalidCorrectLeft'})
+            tf_invalidCorrectLeft = tf;
+        elseif strcmp(cond{:},{'invalidIncorrectLeft'})
+            tf_invalidIncorrectLeft = tf;
+        elseif strcmp(cond{:},{'validCorrectRight'})
+            tf_validCorrectRight = tf;
+        elseif strcmp(cond{:},{'validIncorrectRight'})
+            tf_validIncorrectRight = tf;
+        elseif strcmp(cond{:},{'invalidCorrectRight'})
+            tf_invalidCorrectRight = tf;
+        elseif strcmp(cond{:},{'invalidIncorrectRight'})
+            tf_invalidIncorrectRight = tf;
+        end
+    end
+    
+    tf_validLeft = cat(3,tf_validCorrectLeft,tf_validIncorrectLeft);
+    tf_invalidLeft = cat(3,tf_invalidCorrectLeft,tf_invalidIncorrectLeft);
+    tf_validRight = cat(3,tf_validCorrectRight,tf_validIncorrectRight);
+    tf_invalidRight = cat(3,tf_invalidCorrectRight,tf_invalidIncorrectRight);
+    
+    PL_hit_validLeft = zeros(50,512);PL_hit_std_validLeft = zeros(50,512);PL_mis_validLeft = zeros(50,512);PL_mis_std_validLeft = zeros(50,512);
+    PL_hit_invalidLeft = zeros(50,512);PL_hit_std_invalidLeft = zeros(50,512);PL_mis_invalidLeft = zeros(50,512);PL_mis_std_invalidLeft = zeros(50,512);
+    PL_hit_validRight = zeros(50,512);PL_hit_std_validRight = zeros(50,512);PL_mis_validRight = zeros(50,512);PL_mis_std_validRight = zeros(50,512);
+    PL_hit_invalidRight = zeros(50,512);PL_hit_std_invalidRight = zeros(50,512);PL_mis_invalidRight = zeros(50,512);PL_mis_std_invalidRight = zeros(50,512);
+    
+    parfor rep = 1:repetition
+        disp(['Repetition = '  num2str(rep)])
+        
+        %%% Valid Left
+        ind = randperm(size(tf_validLeft,3));
+        tfhit_validLeft = tf_validLeft(:,:,ind(1:size(tf_validCorrectLeft,3)));
+        tfmis_validLeft = tf_validLeft(:,:,ind((size(tf_validCorrectLeft,3)+1):end));
+        PL_hit_validLeft = PL_hit_validLeft+abs(mean(tfhit_validLeft./abs(tfhit_validLeft),3));
+        PL_mis_validLeft = PL_mis_validLeft+abs(mean(tfmis_validLeft./abs(tfmis_validLeft),3));
+        PL_hit_std_validLeft = PL_hit_std_validLeft+(abs(mean(tfhit_validLeft./abs(tfhit_validLeft),3))).^2;
+        PL_mis_std_validLeft = PL_mis_std_validLeft+(abs(mean(tfmis_validLeft./abs(tfmis_validLeft),3))).^2;
+        %%% Invalid Left
+        ind = randperm(size(tf_invalidLeft,3));
+        tfhit_invalidLeft = tf_invalidLeft(:,:,ind(1:size(tf_invalidCorrectLeft,3)));
+        tfmis_invalidLeft = tf_invalidLeft(:,:,ind((size(tf_invalidCorrectLeft,3)+1):end));
+        PL_hit_invalidLeft = PL_hit_invalidLeft+abs(mean(tfhit_invalidLeft./abs(tfhit_invalidLeft),3));
+        PL_mis_invalidLeft = PL_mis_invalidLeft+abs(mean(tfmis_invalidLeft./abs(tfmis_invalidLeft),3));
+        PL_hit_std_invalidLeft = PL_hit_std_invalidLeft+(abs(mean(tfhit_invalidLeft./abs(tfhit_invalidLeft),3))).^2;
+        PL_mis_std_invalidLeft = PL_mis_std_invalidLeft+(abs(mean(tfmis_invalidLeft./abs(tfmis_invalidLeft),3))).^2;
+        %%% Valid Right
+        ind = randperm(size(tf_validRight,3));
+        tfhit_validRight = tf_validRight(:,:,ind(1:size(tf_validCorrectRight,3)));
+        tfmis_validRight = tf_validRight(:,:,ind((size(tf_validCorrectRight,3)+1):end));
+        PL_hit_validRight = PL_hit_validRight+abs(mean(tfhit_validRight./abs(tfhit_validRight),3));
+        PL_mis_validRight = PL_mis_validRight+abs(mean(tfmis_validRight./abs(tfmis_validRight),3));
+        PL_hit_std_validRight = PL_hit_std_validRight+(abs(mean(tfhit_validRight./abs(tfhit_validRight),3))).^2;
+        PL_mis_std_validRight = PL_mis_std_validRight+(abs(mean(tfmis_validRight./abs(tfmis_validRight),3))).^2;
+        %%% Invalid Right
+        ind = randperm(size(tf_invalidRight,3));
+        tfhit_invalidRight = tf_invalidRight(:,:,ind(1:size(tf_invalidCorrectRight,3)));
+        tfmis_invalidRight = tf_invalidRight(:,:,ind((size(tf_invalidCorrectRight,3)+1):end));
+        PL_hit_invalidRight = PL_hit_invalidRight+abs(mean(tfhit_invalidRight./abs(tfhit_invalidRight),3));
+        PL_mis_invalidRight = PL_mis_invalidRight+abs(mean(tfmis_invalidRight./abs(tfmis_invalidRight),3));
+        PL_hit_std_invalidRight = PL_hit_std_invalidRight+(abs(mean(tfhit_invalidRight./abs(tfhit_invalidRight),3))).^2;
+        PL_mis_std_invalidRight = PL_mis_std_invalidRight+(abs(mean(tfmis_invalidRight./abs(tfmis_invalidRight),3))).^2;
+    end
+    %%% Valid Left
+    PL_hit_validLeft = PL_hit_validLeft./repetition;
+    PL_hit_std_validLeft = sqrt(PL_hit_std_validLeft./repetition-PL_hit_validLeft.^2);
+    save([dirmat '/bootPhaseLocking/' obs '_elec' num2str(elec) '_hitbootPL_validLeft.mat'],'PL_hit_validLeft','PL_hit_std_validLeft','freqs','times');
+    PL_mis_validLeft = PL_mis_validLeft./repetition;
+    PL_mis_std_validLeft = sqrt(PL_mis_std_validLeft./repetition-PL_mis_validLeft.^2);
+    save([dirmat '/bootPhaseLocking/' obs '_elec' num2str(elec) '_misbootPL_validLeft.mat'],'PL_mis_validLeft','PL_mis_std_validLeft','freqs','times');
+    %%% Invalid Left
+    PL_hit_invalidLeft = PL_hit_invalidLeft./repetition;
+    PL_hit_std_invalidLeft = sqrt(PL_hit_std_invalidLeft./repetition-PL_hit_invalidLeft.^2);
+    save([dirmat '/bootPhaseLocking/' obs '_elec' num2str(elec) '_hitbootPL_invalidLeft.mat'],'PL_hit_invalidLeft','PL_hit_std_invalidLeft','freqs','times');
+    PL_mis_invalidLeft = PL_mis_invalidLeft./repetition;
+    PL_mis_std_invalidLeft = sqrt(PL_mis_std_invalidLeft./repetition-PL_mis_invalidLeft.^2);
+    save([dirmat '/bootPhaseLocking/' obs '_elec' num2str(elec) '_misbootPL_invalidLeft.mat'],'PL_mis_invalidLeft','PL_mis_std_invalidLeft','freqs','times');
+    %%% Valid Right
+    PL_hit_validRight = PL_hit_validRight./repetition;
+    PL_hit_std_validRight = sqrt(PL_hit_std_validRight./repetition-PL_hit_validRight.^2);
+    save([dirmat '/bootPhaseLocking/' obs '_elec' num2str(elec) '_misbootPL_validRight.mat'],'PL_mis_validRight','PL_mis_std_validRight','freqs','times');
+    PL_mis_validRight = PL_mis_validRight./repetition;
+    PL_mis_std_validRight = sqrt(PL_mis_std_validRight./repetition-PL_mis_validRight.^2);
+    save([dirmat '/bootPhaseLocking/' obs '_elec' num2str(elec) '_hitbootPL_validRight.mat'],'PL_hit_validRight','PL_hit_std_validRight','freqs','times');
+    %%% Invalid Right
+    PL_hit_invalidRight = PL_hit_invalidRight./repetition;
+    PL_hit_std_invalidRight = sqrt(PL_hit_std_invalidRight./repetition-PL_hit_invalidRight.^2);
+    save([dirmat '/bootPhaseLocking/' obs '_elec' num2str(elec) '_misbootPL_invalidRight.mat'],'PL_mis_invalidRight','PL_mis_std_invalidRight','freqs','times');
+    PL_mis_invalidRight = PL_mis_invalidRight./repetition;
+    PL_mis_std_invalidRight = sqrt(PL_mis_std_invalidRight./repetition-PL_mis_invalidRight.^2);
+    save([dirmat '/bootPhaseLocking/' obs '_elec' num2str(elec) '_hitbootPL_invalidRight.mat'],'PL_hit_invalidRight','PL_hit_std_invalidRight','freqs','times');
+end
+
+
+%% Plot the Z-scores
+
+exptDir = '/Volumes/DRIVE1/DATA/laura/MEG/Pilot';
+obs = 'id';
+attCond = 'exo';
+fileBase = 'R0947_STB_4.28.15';
+sessionDir = [obs '/meg/' attCond '/' fileBase];
+dirmat = [exptDir '/' sessionDir];
+
+electrods = 1:157;
+poolsumPL = zeros(50,512);
+correct =zeros(50,512);
+incorrect=zeros(50,512);
+
+list_cond = {'validLeft','validRight'};
+
+PL_correct_cond1 = zeros(50,512);
+PL_incorrect_cond1 = zeros(50,512);
+PL_hit_cond1 = zeros(50,512);
+PL_mis_cond1 = zeros(50,512);
+PL_hit_cond1_std = zeros(50,512);
+PL_mis_cond1_std = zeros(50,512);
+
+for elec = electrods
+    for cond = list_cond
+        if strcmp(cond{:},{'validLeft'}) 
+            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_validCorrectLeft.mat']);
+            PL_correct_cond1 = PL_correct_cond1 + abs(phaselocking_values_right);
+            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_validIncorrectLeft.mat']);
+            PL_incorrect_cond1 = PL_incorrect_cond1 + abs(phaselocking_values_right);
+            
+            load([dirmat '/bootPhaseLocking/' obs '_elec' num2str(elec) '_bootPL_validLeft.mat']);
+            PL_hit_cond1 = PL_hit_cond1 + abs(PL_hit_validLeft);
+            PL_hit_cond1_std = PL_hit_cond1_std + PL_hit_std_validLeft.^2;
+            
+        elseif strcmp(cond{:},{'validRight'})
+            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_' cond{:} '.mat']);
+            phaselocking_values_mean_cond2 = phaselocking_values_mean_cond2 + abs(phaselocking_values_right);
+        elseif strcmp(cond{:},{'invalidLeft'})
+            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_' cond{:} '.mat']);
+            phaselocking_values_mean_cond3 = phaselocking_values_mean_cond3 + abs(phaselocking_values_left);
+        elseif strcmp(cond{:},{'invalidRight'})
+            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_' cond{:} '.mat']);
+            phaselocking_values_mean_cond4 = phaselocking_values_mean_cond4 + abs(phaselocking_values_left);
+        end;
+        
+    end
+    
+end
+
+phaselocking_values_mean_cond1 = phaselocking_values_mean_cond1/length(electrods);
+phaselocking_values_mean_cond2 = phaselocking_values_mean_cond2/length(electrods);
+phaselocking_values_mean_cond3 = phaselocking_values_mean_cond3/length(electrods);
+phaselocking_values_mean_cond4 = phaselocking_values_mean_cond4/length(electrods);
+
+%%% Calcul of the phase locking for one subject
+a(:,:,the_subject) = (phaselocking_values_mean_cond1 + phaselocking_values_mean_cond3);
+b(:,:,the_subject) = (phaselocking_values_mean_cond2 + phaselocking_values_mean_cond4);
+sumPL(:,:,the_subject) = (phaselocking_values_mean_cond1 + phaselocking_values_mean_cond3) - (phaselocking_values_mean_cond2 + phaselocking_values_mean_cond4);%
+
+poolsumPL = poolsumPL + sumPL(:,:,the_subject);
+
+poolsumPL = poolsumPL/numsub;
+
+zscore = mean(sumPL,3)./(std(sumPL,[],3)/sqrt(numsub));
+
+pvals_z = 1 - tcdf(min(double(zscore),8),(length(electrods)*numsub)-1);
+
+%%% ttest
+[h,pvals,ci,stats] = ttest(correct,incorrect,0.05,'both',3);
+
+%% FDR analysis
+
+thepvals = pvals(:,323:end);%%%  Selection of the p_values of interest
+
+[p_fdr p_masked] = fdr(thepvals,0.1); %%% Alpha = 10%
+
+fdr_map=zeros(size(thepvals));
+
+if (~isempty(p_masked)); fdr_map(find(thepvals<p_fdr))=1; end
+
+p = zeros(size(pvals));%
+p(:,323:end) = fdr_map;
+% pvals(:,340:end)=p_fdr; %just to know the correspondent value of the fdr_threshold
+
+% pvals=[ones(1,512)*p_fdr; pvals];
+% freqs=[freqs 120];
+z = zeros(size((1:50)));
+z(:) = 20;
+% windows = windows_one;
+figure;
+surf(times-1500,freqs(1:50),-log10(pvals_z));%double(zscore)
+hold on;
+view(0,90);
+set(gcf,'Renderer','Zbuffer');
+shading interp;
+axis([times(1)-1500 times(end)-1500 freqs(1) freqs(end)]);
+[a,b]=contour(times-1500,freqs,1-sign(p*11),1,'Color',[0 0 0]);
+colorbar
+% load('Ruf_colormap3.mat'); colormap(mymap);
+%set(gca,'clim',[0 2])
+% colormap(brighten(jet,-0.1))
+% set(gca,'YScale','log');
+set(gca,'xlim',[-400 400])
+set(gca,'ylim',[2 60])
+%set(gca,'XTick',[300:200:2000])
+%set(gca,'XTickLabel',{'-1200','-1000','-800','-600','-400','-200','Pulse','200','400','600'})
+% title(['p-values: one pulse condition (', num2str(numsub), ' subjects)'],'FontSize',9,'FontWeight','bold')
+% line([0 0], [0 100], [max(max(abs(sumPLz))) max(max(abs(sumPLz)))], 'Color', 'w','LineStyle','--','LineWidth',2)
+% colormap gray
+% fill3([windows*1000/2+150 -windows(end:-1:1)*1000/2 times(322)],[freqs(1:50) freqs(50:-1:1) freqs(1)],[z z 20],[0 0 1],'EdgeColor','none')
+
+line([0 0], [0 100], [max(max(abs(double(zscore)))) max(max(abs(double(zscore))))], 'Color', 'k','LineWidth',2)
+hold off;
+
+children=get(b,'Children');
+for k=1:length(children)
+    set(children(k),'ZData',ones(1,length(get(children(k),'YData')))*14);
+    set(children(k),'LineWidth',1.5);
+end
+
+% namefig = sprintf('fig3_revised4');%
+% print('-djpeg','-r700',namefig);
+
+
 
