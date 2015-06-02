@@ -819,7 +819,10 @@ sumPLbootmean = PL_hit_cond1_std + PL_hit_cond2_std + PL_mis_cond1_std + PL_mis_
 sumPLbootstd = sqrt(PL_hit_cond1_std.^2 + PL_hit_cond2_std.^2 + PL_mis_cond1_std.^2 + PL_mis_cond2_std.^2);
 sumPLz = (sumPL-sumPLbootmean)./sumPLbootstd;
 
-pvals = 1 - tcdf(min(double(sumPLz),8),(length(electrods)*length(obs{:}))-1);
+pvals = 1 - tcdf(min(double(sumPLz),8),(length(electrods)*1)-1);
+
+%%% ttest
+[h,pvals,ci,stats] = ttest(correct,incorrect,0.05,'both',3);
 
 %% FDR analysis
 
