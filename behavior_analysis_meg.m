@@ -23,6 +23,9 @@ sessionValidCorrect = [];sessionValidIncorrect = [];sessionInvalidCorrect = [];s
 sessionValidCorrectLeft = [];sessionValidIncorrectLeft = [];sessionInvalidCorrectLeft = [];sessionInvalidIncorrectLeft = [];
 sessionValidCorrectRight = [];sessionValidIncorrectRight = [];sessionInvalidCorrectRight = [];sessionInvalidIncorrectRight = [];
 sessioncueOnly = [];sessioncueOnlyLeft = [];sessioncueOnlyRight = [];
+
+mne_indexBehavior = zeros(size(numRuns,2)*80,2);
+mne_indexBehavior(:,1) = 1:(80*size(numRuns,2));
 for iRun = numRuns
     
     load([dirData '/' data{iRun}])
@@ -54,6 +57,68 @@ for iRun = numRuns
         else
             answer(iTrial) = resp(max(find(resp~=0)));
             reactTime(iTrial) = rt;
+        end
+        
+        if strcmp(attCond,'endo')
+            if (stimulus.trialSeq(iTrial,1) == 1 || stimulus.trialSeq(iTrial,1) == 2 ||...
+                    stimulus.trialSeq(iTrial,1) == 3 || stimulus.trialSeq(iTrial,1) == 4 ||...
+                    stimulus.trialSeq(iTrial,1) == 5 || stimulus.trialSeq(iTrial,1) == 6)&&stimulus.trialSeq(iTrial,2) == 1 && answer(iTrial) ==1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 1; % valid left correct
+            elseif (stimulus.trialSeq(iTrial,1) == 1 || stimulus.trialSeq(iTrial,1) == 2 ||...
+                    stimulus.trialSeq(iTrial,1) == 3 || stimulus.trialSeq(iTrial,1) == 4 ||...
+                    stimulus.trialSeq(iTrial,1) == 5 || stimulus.trialSeq(iTrial,1) == 6)&&stimulus.trialSeq(iTrial,2) == 2 && answer(iTrial) ==1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 2; % valid right correct
+            elseif (stimulus.trialSeq(iTrial,1) == 7 || stimulus.trialSeq(iTrial,1) == 8)&&stimulus.trialSeq(iTrial,2) == 1 && answer(iTrial) ==1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 3; % invalid left correct
+            elseif (stimulus.trialSeq(iTrial,1) == 7 || stimulus.trialSeq(iTrial,1) == 8)&&stimulus.trialSeq(iTrial,2) == 2 && answer(iTrial) ==1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 4; % invalid right correct
+            elseif (stimulus.trialSeq(iTrial,1) == 1 || stimulus.trialSeq(iTrial,1) == 2 ||...
+                    stimulus.trialSeq(iTrial,1) == 3 || stimulus.trialSeq(iTrial,1) == 4 ||...
+                    stimulus.trialSeq(iTrial,1) == 5 || stimulus.trialSeq(iTrial,1) == 6)&&stimulus.trialSeq(iTrial,2) == 1 && answer(iTrial) ==0
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 5; % valid left incorrect
+            elseif (stimulus.trialSeq(iTrial,1) == 1 || stimulus.trialSeq(iTrial,1) == 2 ||...
+                    stimulus.trialSeq(iTrial,1) == 3 || stimulus.trialSeq(iTrial,1) == 4 ||...
+                    stimulus.trialSeq(iTrial,1) == 5 || stimulus.trialSeq(iTrial,1) == 6)&&stimulus.trialSeq(iTrial,2) == 2 && answer(iTrial) ==0
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 6; % valid right incorrect
+            elseif (stimulus.trialSeq(iTrial,1) == 7 || stimulus.trialSeq(iTrial,1) == 8)&&stimulus.trialSeq(iTrial,2) == 1 && answer(iTrial) ==0
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 7; % invalid left incorrect
+            elseif (stimulus.trialSeq(iTrial,1) == 7 || stimulus.trialSeq(iTrial,1) == 8)&&stimulus.trialSeq(iTrial,2) == 2 && answer(iTrial) ==0
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 8; % invalid right incorrect
+            elseif (stimulus.trialSeq(iTrial,1) == 9 || stimulus.trialSeq(iTrial,1) == 10)&&stimulus.trialSeq(iTrial,2) == 1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 9; % cue_only left
+            elseif (stimulus.trialSeq(iTrial,1) == 9 || stimulus.trialSeq(iTrial,1) == 10)&&stimulus.trialSeq(iTrial,2) == 2
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 10; % cue_only right
+            end
+        elseif strcmp(attCond,'exo')
+            if (stimulus.trialSeq(iTrial,1) == 1 || stimulus.trialSeq(iTrial,1) == 2 ||...
+                    stimulus.trialSeq(iTrial,1) == 3 || stimulus.trialSeq(iTrial,1) == 4)&&stimulus.trialSeq(iTrial,2) == 1 && answer(iTrial) ==1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 1; % valid left correct
+            elseif (stimulus.trialSeq(iTrial,1) == 1 || stimulus.trialSeq(iTrial,1) == 2 ||...
+                    stimulus.trialSeq(iTrial,1) == 3 || stimulus.trialSeq(iTrial,1) == 4)&&stimulus.trialSeq(iTrial,2) == 2 && answer(iTrial) ==1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 2; % valid right correct
+            elseif (stimulus.trialSeq(iTrial,1) == 7 || stimulus.trialSeq(iTrial,1) == 8 ||...
+                    stimulus.trialSeq(iTrial,1) == 5 || stimulus.trialSeq(iTrial,1) == 6)&&stimulus.trialSeq(iTrial,2) == 1 && answer(iTrial) ==1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 3; % invalid left correct
+            elseif (stimulus.trialSeq(iTrial,1) == 7 || stimulus.trialSeq(iTrial,1) == 8 ||...
+                    stimulus.trialSeq(iTrial,1) == 5 || stimulus.trialSeq(iTrial,1) == 6)&&stimulus.trialSeq(iTrial,2) == 2 && answer(iTrial) ==1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 4; % invalid right correct
+            elseif (stimulus.trialSeq(iTrial,1) == 1 || stimulus.trialSeq(iTrial,1) == 2 ||...
+                    stimulus.trialSeq(iTrial,1) == 3 || stimulus.trialSeq(iTrial,1) == 4)&&stimulus.trialSeq(iTrial,2) == 1 && answer(iTrial) ==0
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 5; % valid left incorrect
+            elseif (stimulus.trialSeq(iTrial,1) == 1 || stimulus.trialSeq(iTrial,1) == 2 ||...
+                    stimulus.trialSeq(iTrial,1) == 3 || stimulus.trialSeq(iTrial,1) == 4)&&stimulus.trialSeq(iTrial,2) == 2 && answer(iTrial) ==0
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 6; % valid right incorrect
+            elseif (stimulus.trialSeq(iTrial,1) == 7 || stimulus.trialSeq(iTrial,1) == 8 ||...
+                    stimulus.trialSeq(iTrial,1) == 5 || stimulus.trialSeq(iTrial,1) == 6)&&stimulus.trialSeq(iTrial,2) == 1 && answer(iTrial) ==0
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 7; % invalid left incorrect
+            elseif (stimulus.trialSeq(iTrial,1) == 7 || stimulus.trialSeq(iTrial,1) == 8 ||...
+                    stimulus.trialSeq(iTrial,1) == 5 || stimulus.trialSeq(iTrial,1) == 6)&&stimulus.trialSeq(iTrial,2) == 2 && answer(iTrial) ==0
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 8; % invalid right incorrect
+            elseif (stimulus.trialSeq(iTrial,1) == 9 || stimulus.trialSeq(iTrial,1) == 10)&&stimulus.trialSeq(iTrial,2) == 1
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 9; % cue_only left
+            elseif (stimulus.trialSeq(iTrial,1) == 9 || stimulus.trialSeq(iTrial,1) == 10)&&stimulus.trialSeq(iTrial,2) == 2
+                mne_indexBehavior(iTrial+(size(stimulus.trialSeq,1)*(iRun-1)),2) = 10; % cue_only right
+            end
         end
     end
     
@@ -127,7 +192,8 @@ for iRun = numRuns
     sessioncueOnly = [sessioncueOnly;cue_only+(size(stimulus.trialSeq,1)*(iRun-1))];
     sessioncueOnlyLeft = [sessioncueOnlyLeft;cue_only_left+(size(stimulus.trialSeq,1)*(iRun-1))];
     sessioncueOnlyRight = [sessioncueOnlyRight;cue_only_right+(size(stimulus.trialSeq,1)*(iRun-1))];
-end    
+end
+save('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Log Files/Conditions/mne_indexBehavior.mat','mne_indexBehavior')
 save('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Log Files/Conditions/indexBehavior.mat',...
     'sessionValid','sessionInvalid','sessioncueOnly','sessionValidCorrect','sessionValidIncorrect','sessionInvalidCorrect','sessionInvalidIncorrect',...
     'sessioncueOnlyLeft','sessioncueOnlyRight','sessionValidCorrectLeft','sessionValidIncorrectLeft','sessionInvalidCorrectLeft','sessionInvalidIncorrectLeft',...
@@ -180,4 +246,3 @@ print ('-djpeg', '-r500',namefig);
 
 
 
- 

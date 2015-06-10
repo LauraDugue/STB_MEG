@@ -712,27 +712,26 @@ for elec = electrods
             PL_mis_validLeft = PL_mis_validLeft+abs(mean(tfmis_validLeft./abs(tfmis_validLeft),3));
             PL_hit_std_validLeft = PL_hit_std_validLeft+(abs(mean(tfhit_validLeft./abs(tfhit_validLeft),3))).^2;
             PL_mis_std_validLeft = PL_mis_std_validLeft+(abs(mean(tfmis_validLeft./abs(tfmis_validLeft),3))).^2;
-            
             %%% Invalid Left
             ind = randperm(size(tf_invalidLeft,3));
-            tfhit_invalidLeft = tf_invalidLeft(:,:,ind(1:size(tf_invalidCorrectLeft,3)));
-            tfmis_invalidLeft = tf_invalidLeft(:,:,ind((size(tf_invalidCorrectLeft,3)+1):end));
+            tfhit_invalidLeft = tf_invalidLeft(:,:,ind(1:size(tf_invalidIncorrectLeft,3)));
+            tfmis_invalidLeft = tf_invalidLeft(:,:,ind((size(tf_invalidIncorrectLeft,3)+1):end));
             PL_hit_invalidLeft = PL_hit_invalidLeft+abs(mean(tfhit_invalidLeft./abs(tfhit_invalidLeft),3));
             PL_mis_invalidLeft = PL_mis_invalidLeft+abs(mean(tfmis_invalidLeft./abs(tfmis_invalidLeft),3));
             PL_hit_std_invalidLeft = PL_hit_std_invalidLeft+(abs(mean(tfhit_invalidLeft./abs(tfhit_invalidLeft),3))).^2;
             PL_mis_std_invalidLeft = PL_mis_std_invalidLeft+(abs(mean(tfmis_invalidLeft./abs(tfmis_invalidLeft),3))).^2;
             %%% Valid Right
             ind = randperm(size(tf_validRight,3));
-            tfhit_validRight = tf_validRight(:,:,ind(1:size(tf_validCorrectRight,3)));
-            tfmis_validRight = tf_validRight(:,:,ind((size(tf_validCorrectRight,3)+1):end));
+            tfhit_validRight = tf_validRight(:,:,ind(1:size(tf_validIncorrectRight,3)));
+            tfmis_validRight = tf_validRight(:,:,ind((size(tf_validIncorrectRight,3)+1):end));
             PL_hit_validRight = PL_hit_validRight+abs(mean(tfhit_validRight./abs(tfhit_validRight),3));
             PL_mis_validRight = PL_mis_validRight+abs(mean(tfmis_validRight./abs(tfmis_validRight),3));
             PL_hit_std_validRight = PL_hit_std_validRight+(abs(mean(tfhit_validRight./abs(tfhit_validRight),3))).^2;
             PL_mis_std_validRight = PL_mis_std_validRight+(abs(mean(tfmis_validRight./abs(tfmis_validRight),3))).^2;
             %%% Invalid Right
             ind = randperm(size(tf_invalidRight,3));
-            tfhit_invalidRight = tf_invalidRight(:,:,ind(1:size(tf_invalidCorrectRight,3)));
-            tfmis_invalidRight = tf_invalidRight(:,:,ind((size(tf_invalidCorrectRight,3)+1):end));
+            tfhit_invalidRight = tf_invalidRight(:,:,ind(1:size(tf_invalidIncorrectRight,3)));
+            tfmis_invalidRight = tf_invalidRight(:,:,ind((size(tf_invalidIncorrectRight,3)+1):end));
             PL_hit_invalidRight = PL_hit_invalidRight+abs(mean(tfhit_invalidRight./abs(tfhit_invalidRight),3));
             PL_mis_invalidRight = PL_mis_invalidRight+abs(mean(tfmis_invalidRight./abs(tfmis_invalidRight),3));
             PL_hit_std_invalidRight = PL_hit_std_invalidRight+(abs(mean(tfhit_invalidRight./abs(tfhit_invalidRight),3))).^2;
@@ -785,9 +784,9 @@ correct =zeros(50,512);
 incorrect=zeros(50,512);
 
 %%% Either
-list_cond = {'validLeft','validRight'};
+% list_cond = {'validLeft','validRight'};
 %%% Or
-% list_cond = {'invalidLeft','invalidRight'};
+list_cond = {'invalidLeft','invalidRight'};
 
 PL_correct_cond1 = zeros(50,512);PL_incorrect_cond1 = zeros(50,512);PL_hit_cond1 = zeros(50,512);PL_mis_cond1 = zeros(50,512);PL_hit_cond1_std = zeros(50,512);PL_mis_cond1_std = zeros(50,512);
 PL_correct_cond2 = zeros(50,512);PL_incorrect_cond2 = zeros(50,512);PL_hit_cond2 = zeros(50,512);PL_mis_cond2 = zeros(50,512);PL_hit_cond2_std = zeros(50,512);PL_mis_cond2_std = zeros(50,512);
@@ -796,7 +795,7 @@ for elec = electrods
     for cond = list_cond
         if strcmp(cond{:},{'validLeft'})
             % Load phase-locking data
-            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_validCorrectLeft.mat']);
+            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_validCorrectLeftsub.mat']);
             PL_correct_cond1 = PL_correct_cond1 + abs(phaseLocking);
             load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_validIncorrectLeft.mat']);
             PL_incorrect_cond1 = PL_incorrect_cond1 + abs(phaseLocking);
@@ -809,7 +808,7 @@ for elec = electrods
             PL_mis_cond1_std = PL_mis_cond1_std + PL_mis_std_validLeft.^2;
         elseif strcmp(cond{:},{'validRight'})
             % Load phase-locking data
-            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_validCorrectRight.mat']);
+            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_validCorrectRightsub.mat']);
             PL_correct_cond2 = PL_correct_cond1 + abs(phaseLocking);
             load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_validIncorrectRight.mat']);
             PL_incorrect_cond2 = PL_incorrect_cond1 + abs(phaseLocking);
@@ -822,7 +821,7 @@ for elec = electrods
             PL_mis_cond2_std = PL_mis_cond2_std + PL_mis_std_validRight.^2;
         elseif strcmp(cond{:},{'invalidLeft'})
             % Load phase-locking data
-            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_invalidCorrectLeft.mat']);
+            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_invalidCorrectLeftsub.mat']);
             PL_correct_cond1 = PL_correct_cond1 + abs(phaseLocking);
             load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_invalidIncorrectLeft.mat']);
             PL_incorrect_cond1 = PL_incorrect_cond1 + abs(phaseLocking);
@@ -835,7 +834,7 @@ for elec = electrods
             PL_mis_cond1_std = PL_mis_cond1_std + PL_mis_std_invalidLeft.^2;
         elseif strcmp(cond{:},{'invalidRight'})
             % Load phase-locking data
-            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_invalidCorrectRight.mat']);
+            load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_invalidCorrectRightsub.mat']);
             PL_correct_cond2 = PL_correct_cond1 + abs(phaseLocking);
             load([dirmat '/phaseLocking/' obs '_elec' num2str(elec) '_PL_invalidIncorrectRight.mat']);
             PL_incorrect_cond2 = PL_incorrect_cond1 + abs(phaseLocking);
@@ -888,14 +887,16 @@ set(gcf,'Renderer','Zbuffer');
 shading interp;
 axis([times(1)-500 times(end)-500 freqs(1) freqs(end)]);
 colorbar
-% set(gca,'ylim',[2 50])
+set(gca,'ylim',[2 40])
 % set(gca,'xlim',[-200 200])
-set(gca,'clim',[-.3 .3])
-title('ValidCorrect - ValidIncorrect')
+set(gca,'clim',[-.2 .2])
+title('InvalidCorrect - InvalidIncorrect','FontSize',18)
+xlabel('Time from cue onset (ms)','FontSize',14)
+ylabel('Frequency (Hz)','FontSize',14)
 line([0 0], [0 100], [max(max(abs(double(sumPL)))) max(max(abs(double(sumPL))))], 'Color', 'k','LineWidth',2)
 hold off;
 
-namefig = sprintf('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Figures/tfmap-PLdiff-valid');
+namefig = sprintf('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Figures/tfmap-PLdiff-invalid');
 print('-djpeg','-r600',namefig);
 
 %% Phase opposition
@@ -916,10 +917,10 @@ shading interp;
 axis([times(1)-500 times(end)-500 freqs(1) freqs(end)]);
 [a,b]=contour(times-500,freqs,1-sign(p*11),1,'Color',[0 0 0]);
 colorbar
-% set(gca,'ylim',[2 50])
-% set(gca,'xlim',[-200 200])
-% set(gca,'clim',[0 3])
-title('Phase opposition: ValidCorrect/ValidIncorrect')
+set(gca,'ylim',[2 40])
+set(gca,'xlim',[-200 200])
+% set(gca,'clim',[0.075 .08])
+title('Phase opposition: InvalidCorrect/InvalidIncorrect')
 line([0 0], [0 100], [max(max(abs(double(-log10(pvalsOPP))))) max(max(abs(double(-log10(pvalsOPP)))))], 'Color', 'k','LineWidth',2)
 hold off;
 
@@ -929,5 +930,5 @@ for k=1:length(children)
     set(children(k),'LineWidth',1.5);
 end
 
-namefig = sprintf('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Figures/tfmap-PLopp-valid');
-print('-djpeg','-r600',namefig);
+namefig = sprintf('/Volumes/DRIVE1/DATA/laura/MEG/Pilot/id/meg/exo/R0947_STB_4.28.15/Figures/tfmap-PLopp-invalid');
+% print('-djpeg','-r600',namefig);
