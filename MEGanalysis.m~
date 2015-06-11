@@ -6,12 +6,12 @@
 %    purpose: this master program is used to run all sub-analysis program
 %             for the MEG analysis
 
-%% Obtain the ROIs in a nifti format for that observer to run MNE
+%% Obtain the ROIs for that observer to run MNE
 
 % 1. Go in the right directory where the ROI is.
 % 2. Load the T1
 % 3. RUN: roi2nifti.m This will save 2 files (.hdr and .img) in the T1
-% space that Noah is then converting in .mgz for MNE purposes
+% space that Noah is then converting in .mgz
 
 %% Add the path for fieldtrip and eeglab if necessary
 %%% ATTENTION: eeglab and fieldtrip have redondable variables. DO NOT add both to the path at the same time!!!!
